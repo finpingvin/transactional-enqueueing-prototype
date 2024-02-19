@@ -1,5 +1,15 @@
-# jobbig
+# What is this?
 
+This is just a playground for testing strategies for doing transactional enqueuing of events.
+The goal is to guarantee that an event is enqueued after some transaction has committed.
+This is done by adding to a job table within the database transaction, and then flush these jobs
+in a background task. The flushing is done using a new transaction, where we also remove the job
+after successful enqueueing. The enqueueing transaction is committed after the event is sent.
+By doing this we get an "at least once" policy for our events. We might accidentally send the event twice
+if the enqueuing fails between the delete and the commit. But we guarantee to only send events for
+completed transactions and we always send at least one event.
+
+---
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
